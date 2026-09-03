@@ -1,0 +1,57 @@
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: cloudflare-tunnel
+spec:
+  endpoints:
+    - dnsName: external.aknuk.dev
+      recordType: CNAME
+      targets:
+        - 82a675b2-425d-4816-965e-b81fa9053660.cfargotunnel.com
+sops:
+  age:
+    - enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IG1sa2VtNzY4eDI1NTE5IFZVeTA5RzYv
+        VVlUZmRqUjdOL0VjWWEyQjFaWGNIWU1yZE1CakdtWmJXMmpBK0RGNm1Za1haVHhw
+        TGNSM2wzNW12ZDVxZ2dXUXhZbTYzVW53ZW9nTlVuNXFIRFJmMUNmVGdNaERZVWha
+        cTNzcHNXYnUvWjd6VGVQRURoZ0o2RXZNV0FhWFpFNjZ2eVFEMEQ1bzdNWHZKb3Vh
+        SVlqZ1VoZDFneHdLeWdhN1JpbzEzU1JHNTkwZE1FYkhnNjI4TUlXbk11enRqMEVK
+        bEF6OTgrS0JubStUenVUWGtva1JvSjZ6Q3IrVVdReGhoaU5oZlp1QStRUXlCTVJK
+        cm4rSTFscThCSi9obzZFQUJiVllYc3VxdzFYUFBqaTNncWFDRnhBakMyZWFlUFU4
+        TWRldnU2eWp6c0VOUkQxei8zTEptSm5EelRDbzE2djdSYmNITjkwQnJEeE1JZjAr
+        KzkxZ0RZb09uandFemRKYk04cjIrR0FtVXJXeW85eEJ5UFVCeG5TYi84QTR1Uk9t
+        RkJWM0pMMCs3R3hJN0hSVWkwUEtHRWIxa1h0Y0U0NFJGWm9FQ0phOEZTdGVpTnQ2
+        M2RmaXg4S0NORkFSSWlRaTg4bTIyRXIzdExUaTIxVmQ3MDVJTWMrbExES0FjWmNq
+        Q2FybndkOTVEZ045cU1IVGR6RkJkRllha0dldzJMRmxCYUNsd01Fd0pqRWdFSHhw
+        cE5OQUtxU0hLUTdzdUlnZDY1bEdSZCsvSnhpRjRQRjBQSHpQeXc4eEkrL0tLeEZh
+        OUVwV2dzVGp1eVBmb1JPaEpyUms3MEE5SndmaUpPbWJjMWtSdTBYMGJ5ejF5ZjdG
+        R2JRZklKazJUeGpjTThhQW83Q3BzaFc5MWVhZEhLTmhXdFhhQWVLZXh6bGV3VU80
+        OVhsYjRNQmxEQU91S3JRVVZmaEE2dnRaZ2dmQm9aOHd4MGE2Wk4vQTNTbStoall5
+        dHhFdUpHSHJJQXQ0cXhKWWVVS1JvV2QrUzFZTnRlbmtxY1NUL3pRUVBjMGo3MklS
+        dVpZQkNNektYbVVUL0xiNlo4RHpQWGRTRnJUR0lIaTRyazNVenBmc1JJZHpPMTVL
+        TUxINGJXQUFPcE1HWHE3SmtQQjlkL2ZtSFVPK0VwZkVocFFOdTRLUTZmOVJ5Tm9S
+        ZWhoWUZVOG13TkdUWTBzT2w5d04zNklWYnNaWUp4V3J2NTZldFgxeFZOY2NOQnFD
+        MURKbmxBZTFEWFE1RldhQkU3dU5xc1k3MDlvYk5RUzZicHVEbXBRQXpsdnJJTmN4
+        UXE3YlprRExZREpBOVhrVXB1TTFqL3BBajNWUUovaktPQ2hmSmpsb0toR3N5Z1NE
+        cU9razJ4cnU5S2JvQVhjR0wyMXJwZkxTVXZpUytYVnFPc1ZVVDFOVTB4NithMWZv
+        dkFaZGtmVHozc1pqa2dsU1JTWlNlb3g3OFAvcnU4MzM4U1I2aGhLS3BWdHZjL21k
+        a2hoczVWOHhiT0RnNDZjL2xXWFR5N0kzRHdTeTNJbm54NEhEeFcySDRITXRocW5P
+        bkI1WlJVNVJQMDJUT0ZoZzkxRkpLSkRpS25XSEpwSitwWTJlMTBqYk9kbVFSNWFn
+        ZVRMbTN6alJPS3p6d1FKM0lmMVpaVm1FTlZobWUxVUQ0Q29FTHJhdzFOdWpadFBy
+        SDNkVWxiSjJxWFpMMk5jcnBHVy8wNDVtUVhZWXJyZURDaXpjSDJUT2MzaXZ1aWlK
+        UTk5WGU4K25ONXlOcE4ydjdVWWtvRUdjUnpaSldOcSthSUxYNUVWbTZvRnFveGVG
+        ZFRHUzBkdFBuS0xsZTFnQnY0SE5QQ3ZsdVBLdGlYU0ZlY1RRRjJiMWRhNjNXTXQ5
+        TjZiaFZwMitFcFY1Y1ZiWkEreFVjQ2x4bExrRWVURG1XVUl6K2NZMkFUMHVhRHNM
+        aDg5UGFWQWZiTFMrTy9ieGFlOENIMlhya0xJKzVSeUhPYjBZcTNyWkx3OElhUQp4
+        Q3dGQ1Z6Y20vbmVoaHBxVnRseDJBeVJOTXdBZDdFSUtrb2tHSlYvMkhrCi0tLSBJ
+        RUdZemJ0UTlVekRneXpvK0l0bDRsVGllSkJHWjhPUHNVRDAyL09PU1FNCjsEscnL
+        67AKf7+rlUmDVfDO2YHyeQAQyuW1ic1ERr86TTLJX4YjzmsSMcJtGb+yrzR99A2Z
+        7+FlSBHqhckWEuw=
+        -----END AGE ENCRYPTED FILE-----
+      recipient: age1pq16lc4qceptkgy8sytmpxr8ksgxfvn8sfp4lhlwzfmgugce0ypfs4h2chksfyvxrlzvp9eps7yrn39p5433dkuhduv6j82k62c8nv3e4vqgedmvxafk7sxldpr0ld586h2xpe7j5kgqhqfn7rjaa583dqmn2d6dzdmz2mtvac7deuz5n8cp4n2t9wzes2ev2t5tefra2jspkn05m6a4qgwskr6erch6fz20a9lrjd3ewey4avrrkyht7t38n02edcupgdkfudjf9yux29stdfgpw7y02lxetqw9ntxle09e65ekkj4uyuhd9eepw2z6wruceuldy05rt9duquuy5f87jekr5tve9rfsfzrezmvksv3een4nsk4v4ryupxe39chgygfzd2rrneydrxs9phr8wtzn4mgyvgv5gn8k662wq9t04784cajy9ly2z3jqt55s9uudyt6j392lqqphd3c39jkue63vvz2mp4844355kunqa4nhglyt4kqzcm6s3mrtntw9vv9e9lgffktgxwvepnmfyjgxmmf4trrgvsqxprnxanzj02cpfhlyszqhxuuvdqvkfkyp0aewcjqr3hfcurfrc2qpl0fnh025eztp2s9zmy5fyc4yte89cjutrr525enqmxxqjuumk8hnps6xn665fc29vu6aq9t623jnkkw00ls8yg8q2q2767qdg7mg0fwcjlllpxmjr9ty8e8xqduszks2gpxssmlteygydmtuam5jfgdv06rfyd69cvt9qen7fmrwn3tkysfg946wcequqps9es96rmzj54qv7whp3tu2a5jjqat42xz9z7wrxjxdpeg5haedn725s7ttghfge0whjtt4y2j0kgsppat8zrpn0xrmktlejzhn9fj8ymp3f82uqffyvu0j6vs0zugdd9az26rgwr8m3mga7dufyjskuagzjgu24auktz304ypyq9krhnzv9xzf92qc5y98tx2x6j43cfzxz4kmjquvymezk95ulk3enfxqhu82j64uszt6hggaxn5fskuqv9nz4w0g2jdg24zt9dfcfueku2j0zkq7zym6qa3ngtecfqdv5vq7cqehwggn8vc7788tfg0qc6u9wwhnwm92vq2upup9c3qp9ymejeyz3eg7fpcr483dqqcq6kndwxgxcs8nfpsrcendcph5q4v4d9dcvr8czr954men57sg34dcenu9qzgk52ucww2n406qk0xc7nxhn97e0vryewqr3v44r7rcs8vkz9ag4g60s63elqrs83z7lpravxvmacxmakkf8jwsjpdjlzeyeyes85zrf6qg5n94934hpz329kprumte90yprwver95mz2c2yyt2lnsqsjk406zqy93w8q3ne3qsmgjak0kkqf3kechsseyxpetfgjhxd5pycyq0tgt53tjs5vnz4urzukhhe5udyfncwvxya6t763x37fg35xywutl5d0pcqj6vazy9xzc5z7ztglkg3c39f5fqpj59sy4yhpcrgz0ycl3meyrxsv9s4ksx87tt9jx690dwk6hgj4287833glu80lh0sqjted8r53ym2ygxsnnhxx323m8czgzfqtv3lmmh6d7wrv6kcc4k7yg4ceka58cgwecks3faj9kzwcvxle62vhs9cagpgeac57fhxekxh2vdmn3e8sf3r8kefe5n4202qafz8zgzm0f3rmr7x8avj58vnjyvm6ft89vw8yntvyntsfh8rygv8mxsenzzgl9wn9lzvpcv0qznd058332y2rmephncsftpx6c2w09qpr9rjmvafvfxlzmfeetljvj3xdyj5k079epdxqcukd4md5cvvcd2xwmeu0kgye06uxhs0mjlfkpt6rnuf493m3h3w79htcc8cllg76nkzc9ea7vq4hdejvm33aq7ffvzk5hk05k9gtnhfmk
+  encrypted_regex: ^(data|stringData)$
+  lastmodified: "2026-09-03T13:20:27Z"
+  mac: ENC[AES256_GCM,data:m8e3SCpWqaYe6kKhSuM7NIr4mpF4DAKz/RoY2lj/yELGi1nycO/PDWJr3xuyqgpMaqffkoKytWESyUWjw1UtrHeTsD83JZhWdD9bfrtTCQ4SSldx7UjHrupmn9pF/I4YVwyLLl6Ddz/GugMLhmX3SNJVdixg4G01ppmct/ypq4A=,iv:SJlAN7XydYpHRNF5P9oDP+j9fMB9XW1sgUR8taIefms=,tag:Qx2IBW5cKHhZpHmeyYiAOg==,type:str]
+  mac_only_encrypted: true
+  version: 3.13.3

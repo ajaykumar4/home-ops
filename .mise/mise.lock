@@ -22,6 +22,34 @@ url = "https://github.com/FiloSottile/age/releases/download/v1.3.1/age-v1.3.1-da
 url_api = "https://api.github.com/repos/FiloSottile/age/releases/assets/333752669"
 provenance = "github-attestations"
 
+[[tools.argocd]]
+version = "3.5.2"
+backend = "aqua:argoproj/argo-cd"
+
+[tools.argocd."platforms.linux-arm64"]
+checksum = "sha256:a8c326658c54b3a287ea25de91a8517fc4768f65ad810d918cb7444e049cea33"
+url = "https://github.com/argoproj/argo-cd/releases/download/v3.5.2/argocd-linux-arm64"
+url_api = "https://api.github.com/repos/argoproj/argo-cd/releases/assets/532097224"
+
+[tools.argocd."platforms.linux-arm64".provenance.slsa]
+url = "https://github.com/argoproj/argo-cd/releases/download/v3.5.2/argocd-cli.intoto.jsonl"
+
+[tools.argocd."platforms.linux-x64"]
+checksum = "sha256:d87058531d2aed735100636dd7664bdd49b862588993b571385c49494f9832c1"
+url = "https://github.com/argoproj/argo-cd/releases/download/v3.5.2/argocd-linux-amd64"
+url_api = "https://api.github.com/repos/argoproj/argo-cd/releases/assets/532097221"
+
+[tools.argocd."platforms.linux-x64".provenance.slsa]
+url = "https://github.com/argoproj/argo-cd/releases/download/v3.5.2/argocd-cli.intoto.jsonl"
+
+[tools.argocd."platforms.macos-arm64"]
+checksum = "sha256:6ef581f2d66b3edd178d31705639fa9b58ce820559d83cf78fef50759d821c77"
+url = "https://github.com/argoproj/argo-cd/releases/download/v3.5.2/argocd-darwin-arm64"
+url_api = "https://api.github.com/repos/argoproj/argo-cd/releases/assets/532097446"
+
+[tools.argocd."platforms.macos-arm64".provenance.slsa]
+url = "https://github.com/argoproj/argo-cd/releases/download/v3.5.2/argocd-cli.intoto.jsonl"
+
 [[tools.cloudflared]]
 version = "2026.8.2"
 backend = "aqua:cloudflare/cloudflared"
@@ -40,34 +68,6 @@ url_api = "https://api.github.com/repos/cloudflare/cloudflared/releases/assets/5
 checksum = "sha256:9042c2c5d8b2de78e60f313d5fb31b6c5c1cebde787a3caf1f2c9588084ac442"
 url = "https://github.com/cloudflare/cloudflared/releases/download/2026.8.2/cloudflared-darwin-arm64.tgz"
 url_api = "https://api.github.com/repos/cloudflare/cloudflared/releases/assets/514389484"
-
-[[tools.flux2]]
-version = "2.9.4"
-backend = "aqua:fluxcd/flux2"
-
-[tools.flux2."platforms.linux-arm64"]
-checksum = "sha256:dcab945f8d8658662fa1db93e150a602ba1f91da367a82e099bd65595fc7c62c"
-url = "https://github.com/fluxcd/flux2/releases/download/v2.9.4/flux_2.9.4_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/fluxcd/flux2/releases/assets/505259828"
-
-[tools.flux2."platforms.linux-arm64".provenance.slsa]
-url = "https://github.com/fluxcd/flux2/releases/download/v2.9.4/provenance.intoto.jsonl"
-
-[tools.flux2."platforms.linux-x64"]
-checksum = "sha256:c2c397a52930f52d2005c01d276116b059d062de379386d58e98115380a766a2"
-url = "https://github.com/fluxcd/flux2/releases/download/v2.9.4/flux_2.9.4_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/fluxcd/flux2/releases/assets/505259827"
-
-[tools.flux2."platforms.linux-x64".provenance.slsa]
-url = "https://github.com/fluxcd/flux2/releases/download/v2.9.4/provenance.intoto.jsonl"
-
-[tools.flux2."platforms.macos-arm64"]
-checksum = "sha256:5350675411f1c8c20fb7fd827450933e939f7ab82a2cd92f8fa2abe497761911"
-url = "https://github.com/fluxcd/flux2/releases/download/v2.9.4/flux_2.9.4_darwin_arm64.tar.gz"
-url_api = "https://api.github.com/repos/fluxcd/flux2/releases/assets/505259822"
-
-[tools.flux2."platforms.macos-arm64".provenance.slsa]
-url = "https://github.com/fluxcd/flux2/releases/download/v2.9.4/provenance.intoto.jsonl"
 
 [[tools.gh]]
 version = "2.98.0"
@@ -204,6 +204,25 @@ url_api = "https://api.github.com/repos/casey/just/releases/assets/500509978"
 checksum = "sha256:50ae3e996c974a0bf32ea7d10f495070df33f1b43e0616b2769e3d4821ed8f48"
 url = "https://github.com/casey/just/releases/download/1.58.0/just-1.58.0-aarch64-apple-darwin.tar.gz"
 url_api = "https://api.github.com/repos/casey/just/releases/assets/500509965"
+
+[[tools.ksops]]
+version = "4.5.1"
+backend = "aqua:viaduct-ai/kustomize-sops"
+
+[tools.ksops."platforms.linux-arm64"]
+checksum = "sha256:c7bb562cc2d580a1decc6c77a35e4d35575fb01ca003425726004ecd13dc1cb5"
+url = "https://github.com/viaduct-ai/kustomize-sops/releases/download/v4.5.1/ksops_4.5.1_Linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/viaduct-ai/kustomize-sops/releases/assets/395161658"
+
+[tools.ksops."platforms.linux-x64"]
+checksum = "sha256:9641e03a301bf2fc4b98d0e837a0351e1ca443ecd7a68b25e6af2149fbb2ef30"
+url = "https://github.com/viaduct-ai/kustomize-sops/releases/download/v4.5.1/ksops_4.5.1_Linux_x86_64.tar.gz"
+url_api = "https://api.github.com/repos/viaduct-ai/kustomize-sops/releases/assets/395161660"
+
+[tools.ksops."platforms.macos-arm64"]
+checksum = "sha256:8fd97fe1dd4acd96cfd3fc286915d564e445aeeec99c39f4902f2da58d64199e"
+url = "https://github.com/viaduct-ai/kustomize-sops/releases/download/v4.5.1/ksops_4.5.1_Darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/viaduct-ai/kustomize-sops/releases/assets/395161670"
 
 [[tools.kubeconform]]
 version = "0.8.0"

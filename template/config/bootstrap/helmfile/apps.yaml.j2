@@ -3,9 +3,9 @@
 
 # Bootstraps core applications that provide a minimal runtime base for the
 # cluster. These releases are installed first so the cluster has the resources
-# Flux needs before its own reconciliation begins.
+# ArgoCD needs before its own reconciliation begins.
 #
-# After this bootstrap phase, Flux is ready to take over management of the
+# After this bootstrap phase, ArgoCD is ready to take over management of the
 # application stack and continue reconciling downstream state.
 
 helmDefaults:
@@ -14,47 +14,40 @@ helmDefaults:
   wait: true
   waitForJobs: true
 
-bases:
-  - default.yaml
-
 releases:
   - name: cilium
     namespace: kube-system
-    inherit:
-      - template: default
+    chart: oci://quay.io/cilium/charts/cilium
+    version: 1.19.3
 
   - name: coredns
     namespace: kube-system
-    inherit:
-      - template: default
+    chart: oci://ghcr.io/coredns/charts/coredns
+    version: 1.45.2
     needs: ["kube-system/cilium"]
-  #% if spegel.enabled %#
 
+  #% if spegel.enabled %#
   - name: spegel
     namespace: kube-system
-    inherit:
-      - template: default
+    chart: oci://ghcr.io/spegel-org/helm-charts/spegel
+    version: 0.7.0
     needs: ["kube-system/coredns"]
   #% endif %#
 
   - name: cert-manager
     namespace: cert-manager
-    inherit:
-      - template: default
+    chart: oci://quay.io/jetstack/charts/cert-manager
+    version: v1.20.2
     #% if spegel.enabled %#
-    needs: ["kube-system/spegel"]
+    needs:
+      - kube-system/spegel
     #% else %#
-    needs: ["kube-system/coredns"]
+    needs:
+      - kube-system/coredns
     #% endif %#
 
-  - name: flux-operator
-    namespace: flux-system
-    inherit:
-      - template: default
+  - name: argo-cd
+    namespace: argo-system
+    chart: oci://ghcr.io/argoproj/argo-helm/argo-cd
+    version: 9.5.13
     needs: ["cert-manager/cert-manager"]
-
-  - name: flux-instance
-    namespace: flux-system
-    inherit:
-      - template: default
-    needs: ["flux-system/flux-operator"]

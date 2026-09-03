@@ -74,13 +74,13 @@ def cloudflare_tunnel_secret(file_path: str = 'cloudflare-tunnel.json') -> str:
     return base64.b64encode(json_string.encode('utf-8')).decode('utf-8')
 
 
-# Return the Flux deploy key from deploy.key
+# Return the Argo deploy key from deploy.key
 def deploy_key(file_path: str = 'deploy.key') -> str:
     return _read_stripped(file_path)
 
 
-# Return the Flux webhook token from flux-webhook-token.txt
-def webhook_token(file_path: str = 'flux-webhook-token.txt') -> str:
+# Return the Argo webhook token from argo-webhook-token.txt
+def webhook_token(file_path: str = 'argo-webhook-token.txt') -> str:
     return _read_stripped(file_path)
 
 

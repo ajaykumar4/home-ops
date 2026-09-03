@@ -1,0 +1,59 @@
+fullnameOverride: k8s-gateway
+domain: aknuk.dev
+ttl: 1
+service:
+  type: LoadBalancer
+  port: 53
+  annotations:
+    lbipam.cilium.io/ips: 192.168.1.202
+  externalTrafficPolicy: Cluster
+watchedResources:
+  - HTTPRoute
+  - Service
+sops:
+  age:
+    - enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IG1sa2VtNzY4eDI1NTE5IFRpZ1AvTDlC
+        d0ROK0tONEgrOHk1TVZBNHgwSHRNVDlYMmFQemx6bE9kL2dMRHowOElKSFZiejBU
+        ZGpKdDgvU2s1Qm90YTlrNzRqdVFxWWhPV25aL0ZjMXVVamphaHdqTTdKWnBXV0kx
+        Y3lRNXFycWlMQWVnb1FtQW1WWU1lekVxZDZYV1NxQ3d2QTNWQ3BLSGZHSDZKYVpx
+        Wi9SeGxQL3BEU2hJZS9vS0V2TTFHcDhQT0QzWWZYU2xmTkxKT2JDS2pOZDc5Vkdu
+        b3FCVDJlVDJXejlVeXYwb0JpQU85ZmhkVUFOVXNvb29HS0FGODlRUWVNaldQbFA0
+        MlE3ZDEvbThRTXpaWG81dGVIZDFESFJwUWRlU0tBNTJXcTBkYm91dUdMYW5hSGFr
+        KzFMOElOcVhVWVFiYTRLNE1kUVdWVnJxOC9ZZXRjSUZFSmRtTWh3MnVDamFwSUFO
+        VDdNd3psSUFhS0kyNXF1T0htemtaZ2pWWHZDTm95ZElVQzJ1NXNydlBHSkdWTk1P
+        RFU5NU1sQXo4eHhvRHpNTlVWVlVLYUZOSDgxYjkxMWlNV2dLbGVqbXByWnptTHdH
+        V2xTRTRzOHltQmtpQU10K1NOK1Z1N0tIeHFmZ1BReDZRM25wLzlDZ2lEeXozczNH
+        cmFyd1lNdlh3TFhBeCtMcnVqMTk0OC9xNVRLMWdERjVNUDJGZ0IyeUxvZ0pXcWlO
+        bzk5UE9zOGFXVXAwcVoyRzczZUI4N3FCem1VQ1UvRWlDakRQZnJZZXQ5R0VLbFVP
+        cnpYSk9QZURWcDNURHVaQS9HdW1CVkcrSFlMS2NHaUV0VStLbnFNZ3VHOHBrWUQ1
+        NVZ3YndGR3FQNlpFWjAxYjJhN2UwUDRCcjdEL3p6NkhWU3hLUDNhckhHTlprTVBU
+        bVRVeXJhMHJiU3NUV2pjSzlTbzIxRjVxbEh5Nnd5ejNFdzVneTF6SnBkdGpNVGZ5
+        Mzl1elVOT0lYaEordTBRakgrNUZsVkZ3aHkrTVhSM1o1Mlp4WG1vMGdNQkk2UUlM
+        Y1pTeWhYM29BZldmYSs0aWFsL25HNmNLRk9hSENPUk5oRnliSzFNN09BckE0Q2hL
+        enVmQVBXMHJNNk1WbHhUVk1zbnZqcmdYNUIyc1FSenh5SnhQM01JWHYwbzdOZU0w
+        Zm5GL3E0enZkR2tjUUpwNWZaRWdKd2wyNGJJRGNEZTJsbERiSUhZajZKNWlUdXZP
+        VldHR3Rtd3dlSWNnWlAwQU1nOUtLUmpLcURUU3N4SjJxNENsSWFPRVJxSEw4U3BJ
+        ckxEdEFWMzFuaU9EY0pmL2Z5OWg5QTkxczNyYTZrYUZEdkpMNmZ3cTVNSHlyRjIw
+        cXpFOTB1MEJHRjVVOGxIQVJHenFKcktmSVRVaHVpTWNWcWpNZU40RFJERFZLOWpn
+        NjhoaTJBdDlPVFQ5L051dVFqVEVNdWUwQi9tNmE1Vk83UFFBMHc4NGZFRVJVcTFD
+        Mm9mcC9mN0UxczlLaTB2amtwZDQ4YmUvZzFMRkJiRCtYbncyNDJhd0tSUkNHS1Rw
+        WnhjWEtnc2ZwdUpzV2ZRYWJxUGlIVXFlZGc4MEp5RmlRbzdDdjliSGI1OVpKNmhN
+        QWJKR0NhYm81QlFiL3R2WnNGMGlyOHJYbU5JQlZieWNHTldpYmlScEIray9iQ0Vl
+        UjVEbW5yeUcyOVhhYXFKNXZ1SmZ2V1JJbHJES25EQmtRb2RQVzc4c0xSbmhFVko5
+        VzhWVEorRlM2aDlLZFllWmNPQndaNlhneDg5MTRGV0h4SXNKZU9QK3pOTnFyRXdr
+        cnZlaFB0SXlNNFhmTnpCemVIQlZvMWJnQkhqeFZEQVlmc1dkczVJUHVhQTRPWVhN
+        OXVXekovUHpzVE5yQTBTYjJLYnl5Z3RBR2Uwa3NraGc3aHAvTlNCMnNURm1Tdk1t
+        SnZCNnNyUDZoamsyT3JMSStMVU1Hd2E3Y2I5ZDJmajJka0x0bTlRRTlSaUNVdwpm
+        Y053c2tEWXRSSDZUNlpYYTZRSEFhd1pVVktoVnRDdnpzanhoQkpxemVZCi0tLSBD
+        a0JQWUQyQVBvL01OU0lWNDN3VDVhaThsU1lpV0dDc2xzT2luR2kxckZZCoJJ4tsv
+        c/fj2aPcopDdIJ7RxKvRoI/rc/O0hXkaoSCu/FWTYVYKpjsZ0M9DCETw6j9a68/e
+        lmPSANt2e8KtK2A=
+        -----END AGE ENCRYPTED FILE-----
+      recipient: age1pq16lc4qceptkgy8sytmpxr8ksgxfvn8sfp4lhlwzfmgugce0ypfs4h2chksfyvxrlzvp9eps7yrn39p5433dkuhduv6j82k62c8nv3e4vqgedmvxafk7sxldpr0ld586h2xpe7j5kgqhqfn7rjaa583dqmn2d6dzdmz2mtvac7deuz5n8cp4n2t9wzes2ev2t5tefra2jspkn05m6a4qgwskr6erch6fz20a9lrjd3ewey4avrrkyht7t38n02edcupgdkfudjf9yux29stdfgpw7y02lxetqw9ntxle09e65ekkj4uyuhd9eepw2z6wruceuldy05rt9duquuy5f87jekr5tve9rfsfzrezmvksv3een4nsk4v4ryupxe39chgygfzd2rrneydrxs9phr8wtzn4mgyvgv5gn8k662wq9t04784cajy9ly2z3jqt55s9uudyt6j392lqqphd3c39jkue63vvz2mp4844355kunqa4nhglyt4kqzcm6s3mrtntw9vv9e9lgffktgxwvepnmfyjgxmmf4trrgvsqxprnxanzj02cpfhlyszqhxuuvdqvkfkyp0aewcjqr3hfcurfrc2qpl0fnh025eztp2s9zmy5fyc4yte89cjutrr525enqmxxqjuumk8hnps6xn665fc29vu6aq9t623jnkkw00ls8yg8q2q2767qdg7mg0fwcjlllpxmjr9ty8e8xqduszks2gpxssmlteygydmtuam5jfgdv06rfyd69cvt9qen7fmrwn3tkysfg946wcequqps9es96rmzj54qv7whp3tu2a5jjqat42xz9z7wrxjxdpeg5haedn725s7ttghfge0whjtt4y2j0kgsppat8zrpn0xrmktlejzhn9fj8ymp3f82uqffyvu0j6vs0zugdd9az26rgwr8m3mga7dufyjskuagzjgu24auktz304ypyq9krhnzv9xzf92qc5y98tx2x6j43cfzxz4kmjquvymezk95ulk3enfxqhu82j64uszt6hggaxn5fskuqv9nz4w0g2jdg24zt9dfcfueku2j0zkq7zym6qa3ngtecfqdv5vq7cqehwggn8vc7788tfg0qc6u9wwhnwm92vq2upup9c3qp9ymejeyz3eg7fpcr483dqqcq6kndwxgxcs8nfpsrcendcph5q4v4d9dcvr8czr954men57sg34dcenu9qzgk52ucww2n406qk0xc7nxhn97e0vryewqr3v44r7rcs8vkz9ag4g60s63elqrs83z7lpravxvmacxmakkf8jwsjpdjlzeyeyes85zrf6qg5n94934hpz329kprumte90yprwver95mz2c2yyt2lnsqsjk406zqy93w8q3ne3qsmgjak0kkqf3kechsseyxpetfgjhxd5pycyq0tgt53tjs5vnz4urzukhhe5udyfncwvxya6t763x37fg35xywutl5d0pcqj6vazy9xzc5z7ztglkg3c39f5fqpj59sy4yhpcrgz0ycl3meyrxsv9s4ksx87tt9jx690dwk6hgj4287833glu80lh0sqjted8r53ym2ygxsnnhxx323m8czgzfqtv3lmmh6d7wrv6kcc4k7yg4ceka58cgwecks3faj9kzwcvxle62vhs9cagpgeac57fhxekxh2vdmn3e8sf3r8kefe5n4202qafz8zgzm0f3rmr7x8avj58vnjyvm6ft89vw8yntvyntsfh8rygv8mxsenzzgl9wn9lzvpcv0qznd058332y2rmephncsftpx6c2w09qpr9rjmvafvfxlzmfeetljvj3xdyj5k079epdxqcukd4md5cvvcd2xwmeu0kgye06uxhs0mjlfkpt6rnuf493m3h3w79htcc8cllg76nkzc9ea7vq4hdejvm33aq7ffvzk5hk05k9gtnhfmk
+  encrypted_regex: ^(data|stringData)$
+  lastmodified: "2026-09-03T13:20:27Z"
+  mac: ENC[AES256_GCM,data:Of59LPOxl2f0/2kuLt2zMKyMcfUsWj/RbluMWYdSRSaHgiV7zxtSyM3Eu0FCO6i5KfCKSBEme3jLRuaWrjPUevxnWmffXlS8FjN590gyGuxX7NVqSaKP4fWRS4ccO2t31pMMFTwk+PGDHezFTWM6mTsiwz7kv0iSKhlIQl1196E=,iv:5TvT4IDp92XYYe4JnbNWLyqA6iOIe4mxCocc+SjZHeM=,tag:hF/961i9BKxMg/nOMbMiQA==,type:str]
+  mac_only_encrypted: true
+  version: 3.13.3

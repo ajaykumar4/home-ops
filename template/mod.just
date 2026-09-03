@@ -18,7 +18,7 @@ config_file := justfile_dir() + '/cluster.toml'
 sample_config_file := justfile_dir() + '/cluster.sample.toml'
 validate_script := template_dir + '/scripts/validate.py'
 deploy_key := justfile_dir() + '/deploy.key'
-webhook_token_file := justfile_dir() + '/flux-webhook-token.txt'
+webhook_token_file := justfile_dir() + '/argo-webhook-token.txt'
 cloudflare_tunnel := justfile_dir() + '/cloudflare-tunnel.json'
 
 [doc('Render and validate configuration files')]
@@ -39,7 +39,7 @@ doctor:
     fi
     just template doctor-check "age.key"                "$SOPS_AGE_KEY_FILE"          || rc=1
     just template doctor-check "deploy.key"             "{{ deploy_key }}"            || rc=1
-    just template doctor-check "flux-webhook-token.txt" "{{ webhook_token_file }}"    || rc=1
+    just template doctor-check "argo-webhook-token.txt" "{{ webhook_token_file }}"    || rc=1
     just template doctor-check "template/"              "{{ template_dir }}"          || rc=1
     just template doctor-check "makejinja.toml"         "{{ makejinja_config }}"      || rc=1
     just template doctor-check "validate.py"            "{{ validate_script }}"       || rc=1
