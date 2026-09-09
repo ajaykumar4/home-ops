@@ -14,7 +14,7 @@ talos: talos-secret talos-apply talos-talosconfig talos-kubeconfig
 [doc('Bootstrap apps into the Talos cluster')]
 [group('bootstrap')]
 apps: apps-ready apps-namespaces apps-secrets apps-crds apps-helm apps-argo-bootstrap
-    just log info "Cluster is bootstrapped — Flux will start syncing the Git repository"
+    just log info "Cluster is bootstrapped — Argo will start syncing the Git repository"
 
 # No sops call or existence guard is needed: the bundle is stored already
 # encrypted with the repo's age recipient, and existing bundles are left

@@ -15,11 +15,25 @@ helmDefaults:
   waitForJobs: true
 
 releases:
+  - name: cilium
+    namespace: kube-system
+    chart: oci://quay.io/cilium/charts/cilium
+    version: 1.20.1
+    values: ["../../kubernetes/apps/kube-system/cilium/values.yaml"]
+
+  - name: coredns
+    namespace: kube-system
+    chart: oci://ghcr.io/coredns/charts/coredns
+    version: 1.47.0
+    values: ["../../kubernetes/apps/kube-system/coredns/values.yaml"]
+    needs: ["kube-system/cilium"]
+
   - name: cert-manager
     namespace: cert-manager
     chart: oci://quay.io/jetstack/charts/cert-manager
     version: v1.21.1
     values: ["../../kubernetes/apps/cert-manager/cert-manager/values.yaml"]
+    needs: ["kube-system/coredns"]
 
   - name: argo-cd
     namespace: argo-system
