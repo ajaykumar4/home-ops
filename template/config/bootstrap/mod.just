@@ -13,8 +13,8 @@ talos: talos-secret talos-apply talos-talosconfig talos-kubeconfig
 
 [doc('Bootstrap apps into the Talos cluster')]
 [group('bootstrap')]
-apps: apps-ready apps-namespaces apps-secrets apps-crds apps-helm
-    just log info "Cluster is bootstrapped — Flux will start syncing the Git repository"
+apps: apps-ready apps-namespaces apps-secrets apps-crds apps-helm apps-argo-bootstrap
+    just log info "Cluster is bootstrapped — Argo will start syncing the Git repository"
 
 # No sops call or existence guard is needed: the bundle is stored already
 # encrypted with the repo's age recipient, and existing bundles are left
@@ -76,16 +76,30 @@ apps-namespaces:
 apps-secrets:
     just log info "Applying secrets for apps" stage "{{ recipe_name() }}"
     for secret in \
-        "{{ source_directory() }}/deploy-key.sops.yaml" \
-        "{{ source_directory() }}/sops-age.sops.yaml" \
-        "{{ kubernetes_dir }}/components/sops/cluster-secrets.sops.yaml"
+        "{{ source_directory() }}/helm-secrets-private-keys.sops.yaml"
     do
         name="$(basename "$secret" .sops.yaml)"
         if sops decrypt "$secret" \
-                | kubectl --namespace flux-system apply --server-side --filename - &>/dev/null; then
+                | kubectl --namespace argo-system apply --server-side --filename - &>/dev/null; then
             just log info "Secret applied" resource "$name"
         else
             just log fatal "Failed to apply secret" resource "$name"
+        fi
+    done
+
+[private]
+apps-argo-bootstrap:
+    just log info "Applying Argo bootstrap YAML" stage "{{ recipe_name() }}"
+    for config in \
+        "{{ kubernetes_dir }}/components/cluster.yaml" \
+        "{{ kubernetes_dir }}/components/repositories.yaml" \
+        "{{ kubernetes_dir }}/components/apps.yaml"
+    do
+        name="$(basename "$config" .yaml)"
+        if kubectl apply --server-side --filename "$config" &>/dev/null; then
+            just log info "Argo bootstrap config applied" resource "$name"
+        else
+            just log fatal "Failed to apply Argo bootstrap config" resource "$name"
         fi
     done
 

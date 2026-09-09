@@ -15,11 +15,11 @@ mtu: {{ .Node.Data.mtu }}
 addresses:
   - address: "{{ .Node.IP }}/24"
 routes:
-  - gateway: "192.168.1.1"
+  - gateway: "10.5.0.1"
 {{- if eq .Node.Role "control-plane" }}
 ---
 apiVersion: v1alpha1
 kind: Layer2VIPConfig
 link: bond0
-name: "192.168.1.200"
+name: "10.5.0.200"
 {{- end }}
