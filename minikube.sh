@@ -16,6 +16,7 @@ if [ ! -f "${ZSCALER_CERT}" ]; then
   exit 1
 fi
 
+# Mount into /usr/share/ca-certificates/custom/ to avoid /etc/ssl/certs mount collision
 minikube start \
   --driver=podman \
   --container-runtime=docker \
@@ -28,10 +29,10 @@ minikube start \
   --service-cluster-ip-range="${SERVICE_CIDR}" \
   --extra-config=kubeadm.pod-network-cidr="${POD_CIDR}" \
   --mount \
-  --mount-string="${ZSCALER_CERT}:/etc/ssl/certs/zscaler-ca-bundle.pem"
+  --mount-string="${ZSCALER_CERT}:/usr/share/ca-certificates/custom/zscaler-ca-bundle.pem"
 
-echo "=== Step 3: Injecting Zscaler Certificate into Minikube Node Trust Store ==="
-minikube ssh "sudo cp /etc/ssl/certs/zscaler-ca-bundle.pem /usr/local/share/ca-certificates/zscaler.crt && sudo update-ca-certificates"
+echo "=== Step 3: Updating Minikube Node Certificate Trust Store ==="
+minikube ssh "sudo cp /usr/share/ca-certificates/custom/zscaler-ca-bundle.pem /usr/local/share/ca-certificates/zscaler.crt && sudo update-ca-certificates"
 
 echo "=== Step 4: Removing Default CoreDNS Resources ==="
 kubectl delete deployment coredns -n kube-system --ignore-not-found
@@ -100,7 +101,7 @@ spec:
               protocol: TCP
 EOF
 
-echo "=== Step 8: Restarting ArgoCD Repo Server to pick up Mounted CA Certificate ==="
+echo "=== Step 8: Restarting ArgoCD Repo Server ==="
 kubectl rollout restart deployment argocd-repo-server -n argo-system
 
 echo "=== Setup complete! ==="
