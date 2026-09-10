@@ -39,15 +39,15 @@ kubectl delete service kube-dns -n kube-system --ignore-not-found
 kubectl delete serviceaccount coredns -n kube-system --ignore-not-found
 kubectl delete configmap coredns -n kube-system --ignore-not-found
 
-echo "=== Step 4: Removing Default CoreDNS Resources ==="
+echo "=== Step 5: Bootstrapping Applications (Namespaces, Cilium, CoreDNS, ArgoCD) ==="
 just bootstrap apps
 
-echo "=== Step 5: Creating Zscaler CA ConfigMap for ArgoCD ==="
+echo "=== Step 6: Injecting Zscaler CA ConfigMap into argo-system ==="
 kubectl create configmap zscaler-ca-cert \
   --from-file=ca-certificates.crt="${ZSCALER_CERT}" \
   -n argo-system --dry-run=client -o yaml | kubectl apply -f -
 
-echo "=== Step 6: Applying Cilium Network Policy for ArgoCD Repo Server ==="
+echo "=== Step 7: Applying Cilium Network Policy for ArgoCD Repo Server ==="
 kubectl apply -f - <<EOF
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -99,5 +99,8 @@ spec:
             - port: "443"
               protocol: TCP
 EOF
+
+echo "=== Step 8: Restarting ArgoCD Repo Server to pick up Mounted CA Certificate ==="
+kubectl rollout restart deployment argocd-repo-server -n argo-system
 
 echo "=== Setup complete! ==="
