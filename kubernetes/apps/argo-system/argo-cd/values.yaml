@@ -4,7 +4,7 @@ crds:
   install: true
   keep: false
 
-# Disable chart's default NetworkPolicies so Cilium manages ingress/egress cleanly
+# Disable chart's default NetworkPolicies so Cilium handles egress/ingress enforcement
 global:
   networkPolicy:
     create: false
@@ -111,7 +111,6 @@ repoServer:
     - name: helm-secrets-private-keys
       secret:
         secretName: helm-secrets-private-keys
-    # Zscaler CA Certificate Volume
     - name: zscaler-ca-cert
       configMap:
         name: zscaler-ca-cert
@@ -129,7 +128,6 @@ repoServer:
       subPath: ksops
     - mountPath: /helm-secrets-private-keys/
       name: helm-secrets-private-keys
-    # Mount Zscaler CA Certificate into System Store
     - mountPath: /etc/ssl/certs/ca-certificates.crt
       subPath: ca-certificates.crt
       name: zscaler-ca-cert
