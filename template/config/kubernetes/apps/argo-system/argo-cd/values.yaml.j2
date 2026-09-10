@@ -7,7 +7,6 @@ configs:
   params:
     server.insecure: true
     controller.diff.server.side: true
-    reposerver.git.request.timeout: 60s
   cm:
     statusbadge.enabled: true
     kustomize.buildOptions: "--enable-alpha-plugins --enable-exec"
@@ -55,6 +54,7 @@ notifications:
     serviceMonitor: *service-monitor
 repoServer:
   replicas: 2
+  helm.insecure-skip-verify: true
   serviceAccount:
     create: true
     name: argocd-repo-server
