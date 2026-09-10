@@ -40,13 +40,14 @@ kubectl delete service kube-dns -n kube-system --ignore-not-found
 kubectl delete serviceaccount coredns -n kube-system --ignore-not-found
 kubectl delete configmap coredns -n kube-system --ignore-not-found
 
-echo "=== Step 5: Bootstrapping Applications (Namespaces, Cilium, CoreDNS, ArgoCD) ==="
-just bootstrap apps
-
-echo "=== Step 6: Injecting Zscaler CA ConfigMap into argo-system ==="
+echo "=== Step 5: Creating argo-system Namespace & Injecting Zscaler CA ConfigMap into argo-system ==="
+kubectl create namespace argo-system --dry-run=client -o yaml | kubectl apply -f -
 kubectl create configmap zscaler-ca-cert \
   --from-file=ca-certificates.crt="${ZSCALER_CERT}" \
   -n argo-system --dry-run=client -o yaml | kubectl apply -f -
+
+echo "=== Step 6: Bootstrapping Applications (Namespaces, Cilium, CoreDNS, ArgoCD) ==="
+just bootstrap apps
 
 echo "=== Step 7: Applying Cilium Network Policy for ArgoCD Repo Server ==="
 kubectl apply -f - <<EOF
