@@ -1,6 +1,6 @@
 ---
 clusterName: kubernetes
-clusterEndpoint: https://10.5.0.200:6443
+clusterEndpoint: https://192.168.49.200:6443
 
 # renovate: datasource=github-releases depName=siderolabs/talos
 talosVersion: v1.14.0
@@ -10,8 +10,8 @@ kubernetesVersion: v1.37.0
 secretsPath: secrets.sops.yaml
 
 nodes:
-  - host: "home-ops"
-    ip: "10.5.0.2"
+  - host: "minikube"
+    ip: "192.168.49.2"
     role: control-plane
     schematicId: "376567988ad370138ad8b2698212367b8edcb69b5fd68c80be1f2ec7d603b4ba"
     data:
