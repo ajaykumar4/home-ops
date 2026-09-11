@@ -9,7 +9,7 @@ metadata:
 spec:
   project: kubernetes
   sources:
-    - repoURL: "https://github.com/ajaykumar4/home-ops.git"
+    - repoURL: https://github.com/ajaykumar4/home-ops.git
       path: kubernetes/apps/renovate/renovate-jobs
       targetRevision: main
       ref: repo
