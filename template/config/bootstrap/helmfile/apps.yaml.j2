@@ -48,5 +48,7 @@ releases:
     namespace: argo-system
     chart: oci://ghcr.io/argoproj/argo-helm/argo-cd
     version: 10.7.1
-    values: ['../../kubernetes/apps/argo-system/argo-cd/values.yaml']
+    values:
+      - '../../kubernetes/apps/argo-system/argo-cd/values.yaml'
+      - '../../kubernetes/apps/argo-system/argo-cd/values.sops.yaml'
     needs: ["cert-manager/cert-manager"]
