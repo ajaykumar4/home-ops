@@ -5,7 +5,7 @@ set -euo pipefail
 KUBERNETES_VERSION="v1.35.8"
 SERVICE_CIDR="10.43.0.0/16"
 POD_CIDR="10.244.0.0/16"
-ZSCALER_CERT="${HOME}/.minikube/certs/zscaler-ca-bundle.pem"
+ZSCALER_CERT="${HOME}/.minikube/certs/zscaler.crt"
 
 echo "=== Step 1: Cleaning up existing Minikube cluster ==="
 minikube delete || true
@@ -28,10 +28,10 @@ minikube start \
   --service-cluster-ip-range="${SERVICE_CIDR}" \
   --extra-config=kubeadm.pod-network-cidr="${POD_CIDR}" \
   --mount \
-  --mount-string="${ZSCALER_CERT}:/usr/share/ca-certificates/custom/zscaler-ca-bundle.pem"
+  --mount-string="${ZSCALER_CERT}:/usr/share/ca-certificates/custom/zscaler.crt"
 
 echo "=== Step 3: Updating Minikube Node Certificate Trust Store ==="
-minikube ssh "sudo cp /usr/share/ca-certificates/custom/zscaler-ca-bundle.pem /usr/local/share/ca-certificates/zscaler.crt && sudo update-ca-certificates"
+minikube ssh "sudo cp /usr/share/ca-certificates/custom/zscaler.crt /usr/local/share/ca-certificates/zscaler.crt && sudo update-ca-certificates"
 
 echo "=== Step 4: Removing Default CoreDNS Resources ==="
 kubectl delete deployment coredns -n kube-system --ignore-not-found
@@ -108,7 +108,7 @@ kubectl patch deployment argocd-repo-server -n argo-system --type json -p '[
     "op": "add",
     "path": "/spec/template/spec/volumes/-",
     "value": {
-      "name": "zscaler-ca",
+      "name": "zscaler",
       "configMap": {
         "name": "argocd-tls-certs-cm"
       }
@@ -118,9 +118,9 @@ kubectl patch deployment argocd-repo-server -n argo-system --type json -p '[
     "op": "add",
     "path": "/spec/template/spec/containers/0/volumeMounts/-",
     "value": {
-      "name": "zscaler-ca",
-      "mountPath": "/etc/ssl/certs/zscaler.pem",
-      "subPath": "ghcr.io"
+      "name": "zscaler",
+      "mountPath": "/etc/ssl/certs/zscaler.crt",
+      "subPath": "zscaler.crt"
     }
   },
   {
@@ -128,7 +128,7 @@ kubectl patch deployment argocd-repo-server -n argo-system --type json -p '[
     "path": "/spec/template/spec/containers/0/env/-",
     "value": {
       "name": "SSL_CERT_FILE",
-      "value": "/etc/ssl/certs/zscaler.pem"
+      "value": "/etc/ssl/certs/zscaler.crt"
     }
   }
 ]'
