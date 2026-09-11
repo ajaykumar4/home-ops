@@ -45,4 +45,47 @@ kubectl delete configmap coredns -n kube-system --ignore-not-found
 echo "=== Step 5: Bootstrapping Applications (Namespaces, Cilium, CoreDNS, ArgoCD) ==="
 just bootstrap apps
 
+echo "=== Step 6: Patching ArgoCD Repo Server ==="
+kubectl create configmap argocd-tls-certs-cm \
+  -n argo-system \
+  --from-file=zscaler.crt="${ZSCALER_CERT}" \
+  --dry-run=client -o yaml | kubectl apply -f -
+kubectl patch deployment argocd-repo-server -n argo-system --type strategic -p '{
+  "spec": {
+    "template": {
+      "spec": {
+        "volumes": [
+          {
+            "name": "zscaler-ca-vol",
+            "configMap": {
+              "name": "argocd-tls-certs-cm"
+            }
+          }
+        ],
+        "containers": [
+          {
+            "name": "repo-server",
+            "env": [
+              {
+                "name": "SSL_CERT_FILE",
+                "value": "/etc/ssl/certs/zscaler.crt"
+              }
+            ],
+            "volumeMounts": [
+              {
+                "name": "zscaler-ca-vol",
+                "mountPath": "/etc/ssl/certs/zscaler.crt",
+                "subPath": "zscaler.crt"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}'
+
+echo "=== Step 8: Restarting ArgoCD Repo Server ==="
+kubectl rollout restart deployment argocd-repo-server -n argo-system
+
 echo "=== Setup complete! ==="
