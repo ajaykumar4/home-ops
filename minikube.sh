@@ -31,7 +31,10 @@ minikube start \
   --mount-string="${ZSCALER_CERT}:/usr/share/ca-certificates/custom/zscaler.crt"
 
 echo "=== Step 3: Updating Minikube Node Certificate Trust Store ==="
-minikube ssh "sudo cp /usr/share/ca-certificates/custom/zscaler.crt /usr/local/share/ca-certificates/zscaler.crt && sudo update-ca-certificates"
+minikube ssh "
+  sudo cp /usr/share/ca-certificates/custom/zscaler.crt /usr/local/share/ca-certificates/zscaler.crt
+  sudo update-ca-certificates --fresh || true
+"
 
 echo "=== Step 4: Removing Default CoreDNS Resources ==="
 kubectl delete deployment coredns -n kube-system --ignore-not-found
@@ -41,7 +44,6 @@ kubectl delete configmap coredns -n kube-system --ignore-not-found
 
 echo "=== Step 5: Creating argo-system Namespace & Injecting Zscaler CA ConfigMap ==="
 kubectl create namespace argo-system --dry-run=client -o yaml | kubectl apply -f -
-kubectl delete configmap argocd-tls-certs-cm -n argo-system
 kubectl create configmap argocd-tls-certs-cm \
   -n argo-system \
   --from-file=github.com="${ZSCALER_CERT}" \
@@ -51,58 +53,6 @@ echo "=== Step 6: Bootstrapping Applications (Namespaces, Cilium, CoreDNS, ArgoC
 just bootstrap apps
 
 echo "=== Step 7: Applying Cilium Network Policy for ArgoCD Repo Server ==="
-kubectl apply -f - <<EOF
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: argocd-repo-server-policy
-  namespace: argo-system
-spec:
-  endpointSelector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-repo-server
-  ingress:
-    - fromEndpoints:
-        - matchLabels:
-            app.kubernetes.io/part-of: argocd
-      toPorts:
-        - ports:
-            - port: "8081"
-              protocol: TCP
-    - fromEntities:
-        - host
-        - remote-node
-        - health
-      toPorts:
-        - ports:
-            - port: "8081"
-              protocol: TCP
-  egress:
-    - toEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: argocd-redis
-      toPorts:
-        - ports:
-            - port: "6379"
-              protocol: TCP
-    - toEndpoints:
-        - matchLabels:
-            "k8s:io.kubernetes.pod.namespace": kube-system
-            "k8s:k8s-app": kube-dns
-      toPorts:
-        - ports:
-            - port: "53"
-              protocol: UDP
-            - port: "53"
-              protocol: TCP
-    - toEntities:
-        - world
-      toPorts:
-        - ports:
-            - port: "443"
-              protocol: TCP
-EOF
-
 kubectl patch deployment argocd-repo-server -n argo-system --type json -p '[
   {
     "op": "add",
