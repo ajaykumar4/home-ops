@@ -9,7 +9,6 @@ spec:
   image: ghcr.io/renovatebot/renovate:43.176.1
   discoveryFilters:
     - ajaykumar4/*
-    - ajaykumar4/cluster-template
   skipForks: true
   extraEnv:
     - name: LOG_LEVEL
