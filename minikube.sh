@@ -20,9 +20,8 @@ fi
 minikube start \
   --driver=podman \
   --container-runtime=docker \
-  --cpus=8 \
-  --memory=24576mb \
-  --disk-size=80g \
+  --cpus=max \
+  --memory=max \
   --kubernetes-version="${KUBERNETES_VERSION}" \
   --cni=false \
   --embed-certs \
@@ -42,10 +41,11 @@ kubectl delete configmap coredns -n kube-system --ignore-not-found
 
 echo "=== Step 5: Creating argo-system Namespace & Injecting Zscaler CA ConfigMap ==="
 kubectl create namespace argo-system --dry-run=client -o yaml | kubectl apply -f -
-kubectl delete configmap zscaler-ca-cert -n argo-system --ignore-not-found
-kubectl create configmap zscaler-ca-cert \
-  --from-file=ca-certificates.crt="${ZSCALER_CERT}" \
-  -n argo-system
+kubectl delete configmap argocd-tls-certs-cm -n argo-system
+kubectl create configmap argocd-tls-certs-cm \
+  -n argo-system \
+  --from-file=github.com="${ZSCALER_CERT}" \
+  --from-file=ghcr.io="${ZSCALER_CERT}"
 
 echo "=== Step 6: Bootstrapping Applications (Namespaces, Cilium, CoreDNS, ArgoCD) ==="
 just bootstrap apps
@@ -102,6 +102,36 @@ spec:
             - port: "443"
               protocol: TCP
 EOF
+
+kubectl patch deployment argocd-repo-server -n argo-system --type json -p '[
+  {
+    "op": "add",
+    "path": "/spec/template/spec/volumes/-",
+    "value": {
+      "name": "zscaler-ca",
+      "configMap": {
+        "name": "argocd-tls-certs-cm"
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/spec/template/spec/containers/0/volumeMounts/-",
+    "value": {
+      "name": "zscaler-ca",
+      "mountPath": "/etc/ssl/certs/zscaler.pem",
+      "subPath": "ghcr.io"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/spec/template/spec/containers/0/env/-",
+    "value": {
+      "name": "SSL_CERT_FILE",
+      "value": "/etc/ssl/certs/zscaler.pem"
+    }
+  }
+]'
 
 echo "=== Step 8: Restarting ArgoCD Repo Server ==="
 kubectl rollout restart deployment argocd-repo-server -n argo-system

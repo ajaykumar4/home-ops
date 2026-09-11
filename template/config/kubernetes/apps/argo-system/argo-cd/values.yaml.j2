@@ -54,7 +54,6 @@ notifications:
     serviceMonitor: *service-monitor
 repoServer:
   replicas: 2
-  helm.insecure-skip-verify: true
   serviceAccount:
     create: true
     name: argocd-repo-server
