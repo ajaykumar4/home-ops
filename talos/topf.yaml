@@ -10,14 +10,14 @@ kubernetesVersion: v1.37.0
 secretsPath: secrets.sops.yaml
 
 nodes:
-  - host: "minikube"
+  - host: "k8s-0"
     ip: "192.168.49.2"
     role: control-plane
     schematicId: "376567988ad370138ad8b2698212367b8edcb69b5fd68c80be1f2ec7d603b4ba"
     data:
       installDisk: "/dev/nvme0n1"
       installDiskSerial: ""
-      macAddr: "e2:99:fb:72:f6:45"
+      macAddr: "aa:bb:cc:dd:ee:ff"
       mtu: 1500
       encryptDisk: false
-      kernelModules: []
+      kernelModules: [nvidia, nvidia_uvm]
