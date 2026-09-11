@@ -12,7 +12,6 @@ spec:
     - repoURL: https://github.com/ajaykumar4/home-ops.git
       path: kubernetes/apps/renovate/renovate-jobs
       targetRevision: main
-      ref: repo
   destination:
     name: in-cluster
     namespace: renovate
