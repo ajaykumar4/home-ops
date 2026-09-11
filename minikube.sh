@@ -85,7 +85,48 @@ kubectl patch deployment argocd-repo-server -n argo-system --type strategic -p '
   }
 }'
 
-echo "=== Step 8: Restarting ArgoCD Repo Server ==="
+echo "=== Step 8: Patching Cert-Manager Controller ==="
+kubectl create configmap cert-manager-zscaler-ca \
+  -n cert-manager \
+  --from-file=zscaler.crt="${ZSCALER_CERT}" \
+  --dry-run=client -o yaml | kubectl apply -f -
+kubectl patch deployment cert-manager -n cert-manager --type strategic -p '{
+  "spec": {
+    "template": {
+      "spec": {
+        "volumes": [
+          {
+            "name": "zscaler-ca-vol",
+            "configMap": {
+              "name": "cert-manager-zscaler-ca"
+            }
+          }
+        ],
+        "containers": [
+          {
+            "name": "cert-manager-controller",
+            "env": [
+              {
+                "name": "SSL_CERT_FILE",
+                "value": "/etc/ssl/certs/zscaler.crt"
+              }
+            ],
+            "volumeMounts": [
+              {
+                "name": "zscaler-ca-vol",
+                "mountPath": "/etc/ssl/certs/zscaler.crt",
+                "subPath": "zscaler.crt"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}'
+
+echo "=== Step 9: Restarting Deployments ==="
 kubectl rollout restart deployment argocd-repo-server -n argo-system
+kubectl rollout restart deployment cert-manager -n cert-manager
 
 echo "=== Setup complete! ==="
