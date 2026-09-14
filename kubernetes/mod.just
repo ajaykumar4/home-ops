@@ -4,7 +4,9 @@ set script-interpreter := ['bash', '-euo', 'pipefail']
 set default-list
 set default-script
 
-[doc('Force Flux to pull in changes from your Git repository')]
+[doc('Force Argo CD to pull in changes from your Git repository')]
 [group('kube')]
 reconcile:
-    flux --namespace flux-system reconcile kustomization flux-system --with-source
+    argocd app get projects --refresh --hard && argocd app sync projects
+    argocd app get repositories --refresh --hard && argocd app sync repositories
+    argocd app get apps --refresh --hard && argocd app sync apps

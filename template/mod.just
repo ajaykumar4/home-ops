@@ -13,8 +13,10 @@ private_dir := justfile_dir() + '/.private'
 template_dir := justfile_dir() + '/template'
 template_resources := template_dir + '/resources'
 makejinja_config := justfile_dir() + '/makejinja.toml'
+mise_fragment := justfile_dir() + '/.mise/conf.d/template.toml'
 
 config_file := justfile_dir() + '/cluster.toml'
+schema_file := justfile_dir() + '/cluster.schema.json'
 sample_config_file := justfile_dir() + '/cluster.sample.toml'
 validate_script := template_dir + '/scripts/validate.py'
 deploy_key := justfile_dir() + '/deploy.key'
@@ -62,6 +64,14 @@ init:
     [ -f "$SOPS_AGE_KEY_FILE" ]       || age-keygen -pq --output "$SOPS_AGE_KEY_FILE"
     [ -f "{{ deploy_key }}" ]         || ssh-keygen -t ed25519 -C "deploy-key" -f "{{ deploy_key }}" -q -P ""
     [ -f "{{ webhook_token_file }}" ] || openssl rand -hex 16 > "{{ webhook_token_file }}"
+
+# Editors resolve the #:schema directive in cluster.toml against this file;
+# the validator tests fail when it drifts from the pydantic model.
+[doc('Regenerate the cluster.toml JSON Schema from the validator')]
+[group('template')]
+schema:
+    uv run --quiet --locked --no-dev "{{ validate_script }}" --schema > "{{ schema_file }}"
+    oxfmt "{{ schema_file }}" > /dev/null
 
 [confirm("Remove all templated files and directories — continue? [y/N]")]
 [doc('Remove rendered files (bootstrap/, kubernetes/, talos/, .sops.yaml)')]
@@ -119,11 +129,14 @@ tidy-archive:
     mv \
         "{{ template_dir }}" \
         "{{ makejinja_config }}" \
+        "{{ mise_fragment }}" \
+        "{{ schema_file }}" \
         "{{ config_file }}" \
         "{{ sample_config_file }}" \
         "{{ justfile_dir() }}/pyproject.toml" \
         "{{ justfile_dir() }}/uv.lock" \
         "$TIDY_FOLDER/"
+    rmdir "$(dirname "{{ mise_fragment }}")" 2>/dev/null || true
     rm -rf "{{ justfile_dir() }}/.venv"
 
 [private]
@@ -136,7 +149,8 @@ tidy-preconditions:
     test -f "{{ justfile_dir() }}/pyproject.toml"
     test -f "{{ justfile_dir() }}/uv.lock"
     test -f "{{ justfile_dir() }}/justfile"
-    test -f "{{ justfile_dir() }}/.mise/config.toml"
+    test -f "{{ mise_fragment }}"
+    test -f "{{ schema_file }}"
     test -f "{{ justfile_dir() }}/.renovaterc.json5"
     compgen -G "{{ justfile_dir() }}/.github/workflows/template-*.yaml" > /dev/null
 
@@ -144,7 +158,6 @@ tidy-preconditions:
 tidy-strip:
     sd '\..\.j2'                          '' "{{ justfile_dir() }}/.renovaterc.json5"
     sd -A '(?ms)^# === template ===$.*'   '' "{{ justfile_dir() }}/justfile"
-    sd -A '.*required:template.*\n'       '' "{{ justfile_dir() }}/.mise/config.toml"
 
 # Renders every bootstrap chart with the rendered values, catching chart or
 # values drift that dry runs cannot; needs network access to pull charts.

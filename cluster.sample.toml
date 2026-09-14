@@ -1,3 +1,4 @@
+#:schema ./cluster.schema.json
 # =============================================================================
 #    Physical LAN that your Talos nodes live on. Defines the address space
 #    used for node IPs, the gateway/DNS/NTP servers nodes will use, and an
@@ -69,7 +70,7 @@ node_cidr = ""
 
 [kubernetes.api]
 
-# Virtual IP for the Kubernetes API server. kubectl, flux, and every other
+# Virtual IP for the Kubernetes API server. kubectl, argo, and every other
 # client connect here on port 6443. Must be an unused IP inside
 # network.node_cidr — kube-vip floats it across controller nodes.
 # REQUIRED.
@@ -110,7 +111,7 @@ external = ""
 
 
 # =============================================================================
-#    The Git repo Flux will sync from. This is the single source of truth
+#    The Git repo Argo will sync from. This is the single source of truth
 #    for everything in your cluster — once bootstrapped, changes are made by
 #    pushing to this repo. Any Git host works: GitHub, GitLab, Gitea,
 #    Forgejo, Codeberg or self-hosted.
@@ -122,25 +123,25 @@ external = ""
 # Use `https://` if the repo is publicly readable (or `http://` for a
 # LAN-local git server). Use `ssh://git@` if it is
 # private: the template then wires up a deploy key (`deploy.key.pub`) so
-# Flux can clone over SSH; see the README for the extra setup step.
+# Argo can clone over SSH; see the README for the extra setup step.
 # REQUIRED. Examples:
 #   "https://github.com/onedr0p/home-ops.git"
 #   "ssh://git@gitlab.com/onedr0p/home-ops.git"
 #   "ssh://git@git.example.com/k8s/home-ops.git"
 url = ""
 
-# Branch Flux watches. Changes pushed to this branch get reconciled into the
+# Branch Argo watches. Changes pushed to this branch get reconciled into the
 # cluster.
 # OPTIONAL. Default: "main"
 
 # branch = "main"
 
-# Webhook payload format the Flux webhook Receiver verifies, so pushes are
+# Webhook payload format the Argo webhook Receiver verifies, so pushes are
 # reconciled instantly. Gitea and Forgejo emulate GitHub webhooks, so keep
 # "github" for them. Use "generic-hmac" for anything else that signs with
-# HMAC; see https://fluxcd.io/flux/components/notification/receivers/
+# HMAC; see https://argo-cd.readthedocs.io/en/latest/operator-manual/webhook/
 # Use "none" to skip the webhook entirely (e.g. your Git host cannot reach
-# the cluster); Flux then only polls on an interval.
+# the cluster); Argo then only polls on an interval.
 # OPTIONAL. Default: "github".
 # Allowed: "github" | "gitlab" | "generic-hmac" | "none"
 
@@ -159,7 +160,7 @@ url = ""
 
 # =============================================================================
 #    The domain your cluster's hostnames live under. Used for every rendered
-#    hostname (echo, flux-webhook, internal split DNS) and the wildcard
+#    hostname (echo, argo, internal split DNS) and the wildcard
 #    certificate, regardless of DNS provider.
 # =============================================================================
 [domain]
