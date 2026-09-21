@@ -36,7 +36,7 @@ else
 fi
 NODES=("${CONTROLPLANES[@]}" "${WORKERS[@]}")
 # The VMs reach the host at the gateway address; the rendered workspace is
-# served from there over git smart HTTP so Flux can sync it.
+# served from there over git smart HTTP so ArgoCD can sync it.
 GIT_HOST="${E2E_GATEWAY:-$PREFIX.1}"
 GIT_PORT=8418
 GIT_SERVER_CONTAINER=""
@@ -59,7 +59,7 @@ cleanup() {
     if [ "$rc" -ne 0 ]; then
         echo "==> e2e failed (rc=$rc), collecting diagnostics"
         kubectl get pods --all-namespaces 2>/dev/null || true
-        kubectl get gitrepositories,kustomizations,helmreleases --all-namespaces 2>/dev/null || true
+        kubectl get applications --all-namespaces 2>/dev/null || true
         kubectl get events --all-namespaces --sort-by=.lastTimestamp 2>/dev/null | tail -30 || true
         [ -n "$GIT_SERVER_CONTAINER" ] && docker logs --tail 5 "$GIT_SERVER_CONTAINER" 2>/dev/null || true
         for ip in "${NODES[@]}"; do
@@ -155,7 +155,7 @@ echo "==> configure"
 just init
 just configure
 
-# Flux's FluxInstance only reports Ready once its Git sync succeeds, so the
+# ArgoCD's Application only reports Synced once its Git sync succeeds, so the
 # rendered kubernetes/ tree is committed to a bare repo and served to the
 # cluster — the same push-then-bootstrap flow the README walks users through.
 echo "==> publishing rendered repo"
@@ -171,15 +171,14 @@ git -C "$STATE/gitwork" push --quiet "$GIT_PUSH_URL" main
 assert_cluster_health() {
 echo "==> asserting cluster health"
 kubectl wait nodes --all --for=condition=Ready --timeout=10m
-for ns in kube-system cert-manager flux-system; do
+for ns in kube-system cert-manager argo-system; do
     kubectl wait pods --namespace "$ns" --all --for=condition=Ready --timeout=10m
 done
 
-echo "==> asserting flux reconciliation"
-kubectl wait fluxinstance/flux --namespace flux-system --for=condition=Ready --timeout=10m
-kubectl wait gitrepositories --all --all-namespaces --for=condition=Ready --timeout=5m
-kubectl wait kustomizations --all --all-namespaces --for=condition=Ready --timeout=10m
-kubectl wait helmreleases --all --all-namespaces --for=condition=Ready --timeout=10m
+echo "==> asserting argocd reconciliation"
+kubectl wait deployment argocd-server --namespace argo-system --for=condition=Available --timeout=10m
+kubectl wait application --all --all-namespaces --for=condition=Synced --timeout=10m
+kubectl wait application --all --all-namespaces --for=condition=Healthy --timeout=10m
 }
 
 foundation() {
@@ -204,10 +203,10 @@ just bootstrap apps
 assert_cluster_health
 }
 
-flux_sops() {
-echo "==> asserting Flux SOPS decryption"
+argocd_sops() {
+echo "==> asserting ArgoCD SOPS decryption"
 SOPS_SECRET="$STATE/gitwork/kubernetes/apps/default/e2e-sops.sops.yaml"
-export E2E_SOPS_VALUE=flux-decrypted
+export E2E_SOPS_VALUE=argocd-decrypted
 envsubst '${E2E_SOPS_VALUE}' < "$E2E_DIR/sops-secret.yaml.tmpl" > "$SOPS_SECRET"
 sops encrypt --filename-override kubernetes/apps/default/e2e-sops.sops.yaml \
     --in-place "$SOPS_SECRET"
@@ -215,11 +214,12 @@ yq --inplace '.resources += ["./e2e-sops.sops.yaml"]' \
     "$STATE/gitwork/kubernetes/apps/default/kustomization.yaml"
 git -C "$STATE/gitwork" add --all
 git -C "$STATE/gitwork" -c user.name=e2e -c user.email=e2e@cluster.local \
-    commit --quiet --message "test Flux SOPS decryption"
+    commit --quiet --message "test ArgoCD SOPS decryption"
 git -C "$STATE/gitwork" push --quiet "$GIT_PUSH_URL" main
-flux reconcile kustomization cluster-apps --with-source --timeout=10m
+# ArgoCD reconciles applications via controller; trigger sync
+argocd app sync cluster-apps --wait --timeout=10m 2>/dev/null || kubectl patch application cluster-apps --type merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}'
 test "$(kubectl get secret e2e-sops --namespace default \
-    --output jsonpath='{.data.value}' | base64 --decode)" = "flux-decrypted"
+    --output jsonpath='{.data.value}' | base64 --decode)" = "argocd-decrypted"
 }
 
 networking() {
@@ -266,26 +266,26 @@ done
 
 summary() {
 kubectl get nodes --output wide
-kubectl get kustomizations,helmreleases --all-namespaces
+kubectl get applications --all-namespaces
 echo "==> e2e bootstrap succeeded"
 }
 
 case "$MODE" in
     prepare)    prepare ;;
     foundation) foundation ;;
-    flux-sops)  flux_sops ;;
+    argocd-sops)  argocd_sops ;;
     networking) networking ;;
     summary)    summary ;;
     all)
         start_local_git_server
         prepare
         foundation
-        flux_sops
+        argocd_sops
         networking
         summary
         ;;
     *)
-        echo "usage: $0 {prepare|foundation|flux-sops|networking|summary|all}" >&2
+        echo "usage: $0 {prepare|foundation|argocd-sops|networking|summary|all}" >&2
         exit 2
         ;;
 esac
