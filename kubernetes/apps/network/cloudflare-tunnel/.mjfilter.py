@@ -1,0 +1,1 @@
+main = lambda data: data.get("cloudflare", {}).get("enabled", False) == True and data.get("ingress", {}).get("mode", "") == "cloudflare-tunnel"
