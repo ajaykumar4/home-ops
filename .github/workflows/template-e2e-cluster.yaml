@@ -17,7 +17,7 @@ permissions: {}
 
 jobs:
   bootstrap:
-    if: ${{ github.repository == 'onedr0p/cluster-template' }}
+    if: ${{ github.repository == 'ajaykumar4/cluster-template' }}
     name: bootstrap (qemu)
     runs-on: ubuntu-latest
     permissions:

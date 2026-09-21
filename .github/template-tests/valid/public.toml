@@ -19,7 +19,7 @@ dns      = "10.10.10.253"
 external = "10.10.10.251"
 
 [repository]
-url    = "https://github.com/onedr0p/cluster-template.git"
+url    = "https://github.com/ajaykumar4/cluster-template.git"
 branch = "main"
 
 [domain]
