@@ -12,17 +12,16 @@ With this approach, you'll gain a solid foundation to build and manage your Kube
 
 ## ✨ Features
 
-A Kubernetes cluster deployed with [Talos Linux](https://github.com/siderolabs/talos) and an opinionated implementation of [Flux](https://github.com/fluxcd/flux2) syncing from the Git provider of your choice (GitHub, GitLab, Gitea, Forgejo, Codeberg or self-hosted), [sops](https://github.com/getsops/sops) to manage secrets and [cloudflared](https://github.com/cloudflare/cloudflared) to access applications external to your local network.
+A Kubernetes cluster deployed with [Talos Linux](https://github.com/siderolabs/talos) and an opinionated implementation of [ArgoCD](https://github.com/argoproj/argo-cd) syncing from the Git provider of your choice (GitHub, GitLab, Gitea, Forgejo, Codeberg or self-hosted), [SOPS](https://github.com/getsops/sops) with [ksops](https://github.com/viaduct-ai/kustomize-sops) and [helm-secrets](https://github.com/jkroepke/helm-secrets) to manage secrets, and [cloudflared](https://github.com/cloudflare/cloudflared) to access applications external to your local network.
 
 - **Required:** Some knowledge of [Containers](https://opencontainers.org/), [YAML](https://noyaml.com/), [Git](https://git-scm.com/), and a **domain**. Exposing apps to the public internet requires a **Cloudflare account**; internal-only clusters don't.
-- **Included components:** [flux](https://github.com/fluxcd/flux2), [cilium](https://github.com/cilium/cilium), [cert-manager](https://github.com/cert-manager/cert-manager), [spegel](https://github.com/spegel-org/spegel), [reloader](https://github.com/stakater/Reloader), [envoy-gateway](https://github.com/envoyproxy/gateway), [external-dns](https://github.com/kubernetes-sigs/external-dns) and [cloudflared](https://github.com/cloudflare/cloudflared).
+- **Included components:** [argocd](https://github.com/argoproj/argo-cd), [cilium](https://github.com/cilium/cilium), [cert-manager](https://github.com/cert-manager/cert-manager), [spegel](https://github.com/spegel-org/spegel), [reloader](https://github.com/stakater/Reloader), [envoy-gateway](https://github.com/envoyproxy/gateway), [external-dns](https://github.com/kubernetes-sigs/external-dns) and [cloudflared](https://github.com/cloudflare/cloudflared).
 
 **Other features include:**
 
 - Dev env managed w/ [mise](https://mise.jdx.dev/)
 - Workflow automation w/ [GitHub Actions](https://github.com/features/actions)
 - Dependency automation w/ [Renovate](https://www.mend.io/renovate)
-- Flux `HelmRelease` and `Kustomization` diffs w/ [flate](https://github.com/home-operations/flate)
 
 Does this sound cool to you? If so, continue to read on! 👇
 
@@ -72,11 +71,11 @@ These guidelines provide a strong baseline, but there are always exceptions and 
 
     ```sh
     export REPONAME="home-ops"
-    gh repo create $REPONAME --template onedr0p/cluster-template --public --clone
+    gh repo create $REPONAME --template ajaykumar4/cluster-template --public --clone
     cd $REPONAME
     ```
 
-    📍 _**Not using GitHub?** Any Git provider works (GitLab, Gitea, Forgejo, Codeberg or self-hosted). Create an empty repository on your provider, download this template with `git clone --depth 1 https://github.com/onedr0p/cluster-template`, re-initialize it with `git init` and push it to your repository._
+    📍 _**Not using GitHub?** Any Git provider works (GitLab, Gitea, Forgejo, Codeberg or self-hosted). Create an empty repository on your provider, download this template with `git clone --depth 1 https://github.com/ajaykumar4/cluster-template`, re-initialize it with `git init` and push it to your repository._
 
 2. **Install** the [Mise CLI](https://mise.jdx.dev/getting-started.html#installing-mise-cli) on your local workstation.
 
@@ -152,9 +151,9 @@ These guidelines provide a strong baseline, but there are always exceptions and 
     ```
 
 > [!TIP]
-> Using a **private repository** (an `ssh://` URL in `cluster.toml`)? Make sure to paste the public key from `deploy.key.pub` into the deploy keys section of your repository settings (GitHub: `Settings/Deploy keys`, GitLab: `Settings/Repository/Deploy keys`, Gitea/Forgejo: `Settings/Deploy keys`). This will make sure Flux has read/write access to your repository.
+> Using a **private repository** (an `ssh://` URL in `cluster.toml`)? Make sure to paste the public key from `deploy.key.pub` into the deploy keys section of your repository settings (GitHub: `Settings/Deploy keys`, GitLab: `Settings/Repository/Deploy keys`, Gitea/Forgejo: `Settings/Deploy keys`). This will make sure ArgoCD has read/write access to your repository.
 
-### Stage 6: Bootstrap Talos, Kubernetes, and Flux
+### Stage 6: Bootstrap Talos, Kubernetes, and ArgoCD
 
 > [!WARNING]
 > It might take a while for the cluster to be setup (10+ minutes is normal). During which time you will see a variety of error messages like: "couldn't get current server API group list," "error: no matching resources found", etc. 'Ready' will remain "False" as no CNI is deployed yet. **This is normal.** If this step gets interrupted, e.g. by pressing <kbd>Ctrl</kbd> + <kbd>C</kbd>, you likely will need to [reset the cluster](#-reset) before trying again
@@ -165,7 +164,7 @@ These guidelines provide a strong baseline, but there are always exceptions and 
     just bootstrap talos
     ```
 
-2. Install cilium, coredns, spegel, flux and sync the cluster to the repository state:
+2. Install cilium, coredns, spegel, argocd and sync the cluster to the repository state:
 
     ```sh
     just bootstrap apps
@@ -187,15 +186,15 @@ These guidelines provide a strong baseline, but there are always exceptions and 
     kubectl -n kube-system exec ds/cilium --container cilium-agent -- cilium status
     ```
 
-2. Check the status of Flux and if the Flux resources are up-to-date and in a ready state:
+2. Check the status of ArgoCD and if the ArgoCD resources are up-to-date and in a ready state:
 
-    📍 _Run `just kube reconcile` to force Flux to sync your Git repository state_
+    📍 _Run `just kube reconcile` to force ArgoCD to sync your Git repository state_
 
     ```sh
-    flux check
-    flux get sources git flux-system
-    flux get ks -A
-    flux get hr -A
+    argocd login argo-system.${cloudflare_domain} --username admin --password ${argocd_password} --insecure
+    argocd cluster list
+    argocd repo list --output wide
+    argocd app list -A --output wide
     ```
 
 3. Check TCP connectivity to both the internal and external gateways:
@@ -225,7 +224,7 @@ These guidelines provide a strong baseline, but there are always exceptions and 
 > [!TIP]
 > Use the `envoy-external` gateway on `HTTPRoutes` to make applications public to the internet. These are also accessible on your private network once you set up split DNS.
 
-The `external-dns` application created in the `network` namespace will handle creating public DNS records. By default, `echo` and the `flux-webhook` are the only subdomains reachable from the public internet. In order to make additional applications public you must **set the correct gateway** like in the HelmRelease for `echo`.
+The `external-dns` application created in the `network` namespace will handle creating public DNS records. By default, `echo` and the `argo` are the only subdomains reachable from the public internet. In order to make additional applications public you must **set the correct gateway** like in the HelmRelease for `echo`.
 
 ### 🏠 Home DNS
 
@@ -238,29 +237,21 @@ _... Nothing working? That is expected, this is DNS after all!_
 
 ### 🪝 Git Webhook
 
-By default Flux will periodically check your git repository for changes. In-order to have Flux reconcile on `git push` you must configure your Git provider to send `push` events to Flux.
+By default ArgoCD will periodically check your git repository for changes. In-order to have ArgoCD reconcile on `git push` you must configure your Git provider to send `push` events to ArgoCD.
 
-📍 _Don't want a webhook, or your Git provider can't reach the cluster? Set `webhook_provider = "none"` in `cluster.toml` and skip this section; Flux will keep polling on an interval._
+📍 _Don't want a webhook, or your Git provider can't reach the cluster? ArgoCD will keep polling on an interval._
 
-1. Obtain the webhook path:
-
-    📍 _Hook id and path should look like `/hook/12ebd1e363c641dc3c2e430ecf3cee2b3c7a5ac9e1234506f6f5f3ce1230e123`_
-
-    ```sh
-    kubectl -n flux-system get receiver flux-webhook --output=jsonpath='{.status.webhookPath}'
-    ```
-
-2. Piece together the full URL with the webhook path appended:
+1. The ArgoCD webhook URL is:
 
     ```text
-    https://flux-webhook.${cloudflare_domain}/hook/12ebd1e363c641dc3c2e430ecf3cee2b3c7a5ac9e1234506f6f5f3ce1230e123
+    https://argo.${cloudflare_domain}/api/webhook
     ```
 
-3. Navigate to your repository settings and add a webhook with that URL and the secret token from `flux-webhook-token.txt`:
+2. Navigate to your repository settings and add a webhook with that URL and the secret token from `argo-webhook-token.txt`:
 
-    - **GitHub**: under "Settings/Webhooks" press the "Add webhook" button. Fill in the webhook URL, paste the token as the secret, Content type: `application/json`, Events: Choose Just the push event, and save.
-    - **GitLab**: under "Settings/Webhooks" fill in the webhook URL, paste the token as the secret token, check the push events trigger, and save. Also set `webhook_provider = "gitlab"` in `cluster.toml`.
-    - **Gitea/Forgejo**: under "Settings/Webhooks" add a **Gitea/Forgejo** webhook with the webhook URL, method `POST`, content type `application/json`, paste the token as the secret, trigger on push events, and save. Keep the default `webhook_provider = "github"` since these providers emulate GitHub webhooks.
+    - **GitHub**: under "Settings/Webhooks" press the "Add webhook" button. Fill in the webhook URL above, paste the token as the secret, Content type: `application/json`, Events: Choose Just the push event, and save.
+    - **GitLab**: under "Settings/Webhooks" fill in the webhook URL above, paste the token as the secret, check the push events trigger, and save.
+    - **Gitea/Forgejo**: under "Settings/Webhooks" add a webhook with the URL above, method `POST`, content type `application/json`, paste the token as the secret, trigger on push events, and save.
 
 ## 💥 Reset
 
@@ -336,7 +327,7 @@ The node should join the cluster automatically and workloads will be scheduled o
 
 ## 🤖 Renovate
 
-[Renovate](https://www.mend.io/renovate) is a tool that automates dependency management. It is designed to scan your repository around the clock and open PRs for out-of-date dependencies it finds. Common dependencies it can discover are Helm charts, container images, GitHub Actions and more! In most cases merging a PR will cause Flux to apply the update to your cluster.
+[Renovate](https://www.mend.io/renovate) is a tool that automates dependency management. It is designed to scan your repository around the clock and open PRs for out-of-date dependencies it finds. Common dependencies it can discover are Helm charts, container images, GitHub Actions and more! In most cases merging a PR will cause ArgoCD to apply the update to your cluster.
 
 To enable Renovate on GitHub, click the 'Configure' button over at their [Github app page](https://github.com/apps/renovate) and select your repository. On other Git providers you can [self-host Renovate](https://docs.renovatebot.com/getting-started/running/#self-hosting-renovate); note that fetching the shared preset in `.renovaterc.json5` requires a `GITHUB_COM_TOKEN`. Renovate creates a "Dependency Dashboard" as an issue in your repository, giving an overview of the status of all updates. The dashboard has interactive checkboxes that let you do things like advance scheduling or reattempt update PRs you closed without merging.
 
@@ -346,14 +337,13 @@ The base Renovate configuration in your repository can be viewed at [.renovaterc
 
 Below is a general guide on trying to debug an issue with an resource or application. For example, if a workload/resource is not showing up or a pod has started but in a `CrashLoopBackOff` or `Pending` state. These steps do not include a way to fix the problem as the problem could be one of many different things.
 
-1. Check if the Flux resources are up-to-date and in a ready state:
+1. Check if the ArgoCD resources are up-to-date and in a ready state:
 
-    📍 _Run `just kube reconcile` to force Flux to sync your Git repository state_
+    📍 _Run `just kube reconcile` to force ArgoCD to sync your Git repository state_
 
     ```sh
-    flux get sources git -A
-    flux get ks -A
-    flux get hr -A
+    argocd repo list --output wide
+    argocd app list -A --output wide
     ```
 
 2. Do you see the pod of the workload you are debugging:
@@ -439,13 +429,13 @@ These tools offer a variety of solutions to meet your persistent storage needs, 
 
 ### Community Repositories
 
-Community member [@whazor](https://github.com/whazor) created [Kubesearch](https://kubesearch.dev) to allow searching Flux HelmReleases across Github and Gitlab repositories with the `kubesearch` topic.
+Community member [@whazor](https://github.com/whazor) created [Kubesearch](https://kubesearch.dev) to allow searching ArgoCD Applications across Github and Gitlab repositories with the `kubesearch` topic.
 
 ## 🙋 Support
 
 ### Community
 
-- Make a post in this repository's GitHub [Discussions](https://github.com/onedr0p/cluster-template/discussions).
+- Make a post in this repository's GitHub [Discussions](https://github.com/ajaykumar4/cluster-template/discussions).
 - Start a thread in the `#support` or `#cluster-template` channels in the [Home Operations](https://discord.gg/home-operations) Discord server.
 
 ## 📺 Media
@@ -464,7 +454,7 @@ Check out these videos below. If you find them helpful, a like and subscribe goe
 
 If this repo is too hot to handle or too cold to hold check out these following projects.
 
-- [ajaykumar4/cluster-template](https://github.com/ajaykumar4/cluster-template) - _A template for deploying a Talos Kubernetes cluster including Argo for GitOps_
+- [onedr0p/cluster-template](https://github.com/onedr0p/cluster-template) - A template for deploying a Talos Kubernetes cluster including ArgoCD for GitOps
 - [mitchross/k3s-argocd-starter](https://github.com/mitchross/k3s-argocd-starter) - starter kit for k3s, argocd
 - [ricsanfre/pi-cluster](https://github.com/ricsanfre/pi-cluster) - _Pi Kubernetes Cluster. Homelab kubernetes cluster automated with Ansible and FluxCD_
 - [techno-tim/k3s-ansible](https://github.com/techno-tim/k3s-ansible) - _The easiest way to bootstrap a self-hosted High Availability Kubernetes cluster. A fully automated HA k3s etcd install with kube-vip, MetalLB, and more. Build. Destroy. Repeat._

@@ -15,7 +15,7 @@ name = "example.com"
 provider = "none"
 
 [repository]
-url = "https://github.com/onedr0p/cluster-template.git"
+url = "https://github.com/ajaykumar4/cluster-template.git"
 
 [[nodes]]
 name         = "k8s-0"

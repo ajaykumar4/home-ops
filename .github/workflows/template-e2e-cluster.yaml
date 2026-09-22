@@ -17,7 +17,7 @@ permissions: {}
 
 jobs:
   bootstrap:
-    if: ${{ github.repository == 'onedr0p/cluster-template' }}
+    if: ${{ github.repository == 'ajaykumar4/cluster-template' }}
     name: bootstrap (qemu)
     runs-on: ubuntu-latest
     permissions:
@@ -86,9 +86,9 @@ jobs:
       - name: Build healthy cluster foundation
         run: bash ./.github/template-tests/e2e/cluster.sh foundation
 
-      - name: Test Flux SOPS
-        id: flux-sops
-        run: bash ./.github/template-tests/e2e/cluster.sh flux-sops
+      - name: Test ArgoCD SOPS
+        id: argocd-sops
+        run: bash ./.github/template-tests/e2e/cluster.sh argocd-sops
         background: true
 
       - name: Test networking
@@ -97,7 +97,7 @@ jobs:
         background: true
 
       - name: Wait for E2E tests
-        wait: [flux-sops, networking]
+        wait: [argocd-sops, networking]
 
       - name: Summarize cluster
         run: bash ./.github/template-tests/e2e/cluster.sh summary
